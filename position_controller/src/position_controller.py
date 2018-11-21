@@ -64,6 +64,7 @@ class PositionController(object):
         self.tfBuffer = tf2_ros.Buffer()
         self.listener = tf2_ros.TransformListener(self.tfBuffer)
         self.service = rospy.Service('/agv_mecanum/enable_pos_ctrl', SetBool, self.handle_service)
+        self.vel_service = rospy.Service('/agv_mechnaum/enable_vel_ctrl', setBool, self.compute_vel)
         self.activator_x = rospy.Publisher("/agv_mecanum/pid_x/pid_enable", Bool, queue_size=1)
         self.activator_y = rospy.Publisher("/agv_mecanum/pid_y/pid_enable", Bool, queue_size=1)
         self.activator_yaw = rospy.Publisher("/agv_mecanum/pid_yaw/pid_enable", Bool, queue_size=1)
