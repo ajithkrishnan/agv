@@ -1,4 +1,4 @@
-image: willow_garage_cropped.pgm
+image: willow_garage.pgm
 resolution: 0.05
 # origin: [-50.000000, -50.000000, 0.000000]
 origin: [-50.000000, -50.000000, 0.000000]
