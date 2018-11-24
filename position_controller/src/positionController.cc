@@ -5,13 +5,14 @@ void control()
 {
     if (pid_enabled == true)
     {
-        bool setpoint = false;
-        bool trans = false;
+        bool setpoint_flag = false;
+        bool trans_flag = false;
+        geometry_msgs::TransformStamped setpoint, trans;
 
-        setpoint = lookupTransform("agv_base_footprint", "setpoint_pose");
-        trans = lookupTransform("setpoint_pose", "agv_base_footprint");
+        setpoint_flag = lookupTransform("agv_base_footprint", "setpoint_pose", setpoint);
+        trans_flag = lookupTransform("setpoint_pose", "agv_base_footprint", trans);
 
-        if (setpoint && trans)
+        if (setpoint_flag && trans_flag)
         {
             
             pub_pid_x_setpoint.publish(0);
@@ -20,10 +21,11 @@ void control()
             
             pos_x = trans.transform.translation.x;
             pos_y = trans.transform.translation.y;
-            // quat
-            // euler
-            yaw = euler[2];
-
+            tf2::Quaternion quat(trans.transform.rotation.x, trans.transform.rotation.y,
+                                 trans.transform.rotation.z, trans.transform.rotation.w);
+            double yaw, pitch, roll;
+            tf2::Matri3x3(quat).getEulerYPR(yaw, pitch, roll);
+            
             pub_pid_x_state.publish(pos_x);
             pub_pid_y_state.publish(pos_y);
             pub_pid_yaw_state.publish(yaw);
@@ -54,17 +56,27 @@ void control()
     } 
 }
 
-//bool lookupTransform() 
+bool lookupTransform(const std::string &parent, const std::string &child, geometry_msgs::TransformStamped &trans)
+{
+    try
+    {
+        trans = tfBuffer.lookupTransform(parent, child, ros::Time());
+        return true;
+    }
+    except (tf2::ConnectivityException, tf2::LookupException, tf2::ExtrapolationException)
+        return false;
+} 
 
 bool atSetpointPos()
 {
-    float deadband = 0.01;
-    bool disp = false;
-    disp = lookupTransform("agv_base_footprint", "setpoint_pose");
-    if (disp)
+    double deadband = 0.01;
+    bool disp_flag = false;
+    geometry_msgs::TransformStamped disp;
+    disp_flag = lookupTransform("agv_base_footprint", "setpoint_pose", disp);
+    if (disp_flag)
     {
-        float displacement;
-        //displacement =
+        double displacement;
+        displacement = sqrt(disp.transform.translation.x**2 + disp.transform.translation.y**2);
         if (displacement <= deadband)
             return true;
         else
@@ -76,14 +88,16 @@ bool atSetpointPos()
 
 bool atSetpointYaw()
 {
-    float deadband = 0.17453;
-    bool disp = false;
-    disp = lookupTransform("agv_base_footprint", "setpoint_pose"); 
-    if (disp)
+    double deadband = 0.17453;
+    bool disp_flag = false;
+    geometry_msgs::TransformStamped disp;
+    disp_flag = lookupTransform("agv_base_footprint", "setpoint_pose", disp); 
+    if (disp_flag)
     {
-        //quat
-        //euler
-        std_msgs::Float64 yaw = euler[2];
+        f2::Quaternion quat(disp.transform.rotation.x, disp.transform.rotation.y, 
+                    disp.transform.rotation.z, disp.transform.rotation.w)
+        double yaw, pitch, roll;
+        tf2::Matri3x3(quat).getEulerYPR(yaw, pitch, roll);
         if (yaw <= deadband)
             return true;
         else
@@ -93,17 +107,17 @@ bool atSetpointYaw()
         return false;
 }
 
-void callback_x(std_msgs::Float64::ConstPtr& msg)
+void callbackX(std_msgs::Float64::ConstPtr& msg)
 {
     //control_effort_x = msg;
 }
 
-void callback_y(std_msgs::Float64::ConstPtr& msg)
+void callbackY(std_msgs::Float64::ConstPtr& msg)
 {
     //control_effort_x = msg;
 }
 
-void callback_yaw(std_msgs::Float64::ConstPtr& msg)
+void callbackYaw(std_msgs::Float64::ConstPtr& msg)
 {
     //control_effort_x = msg;
 }
@@ -118,7 +132,7 @@ int main(int argc, char **argv)
         ros::NodeHandle nh;
 
         PositionController pc();
-        ros::Rate rate(10);
+        ros::Rate rate(50);
 
         while (ros::ok())
         {
