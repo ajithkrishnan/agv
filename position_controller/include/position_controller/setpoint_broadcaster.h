@@ -13,7 +13,7 @@
 #include <std_msgs/Float64.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-class SetpointBroadcaster()
+class SetpointBroadcaster
 {
     public:
         tf2_ros::TransformBroadcaster br;

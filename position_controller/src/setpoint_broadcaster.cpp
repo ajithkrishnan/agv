@@ -1,5 +1,5 @@
 #include <iostream>
-#include "setpointBroadcaster.h"
+#include "setpoint_broadcaster.h"
 
 //void callbackSetpoint(std_msgs::Float64::ConstPtr &msg)
 {
