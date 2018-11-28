@@ -1,18 +1,18 @@
-#include <iostream>
-#include <position_controller/position_controller.h>
+//#include <iostream>
+#include "position_controller/position_controller.h"
 
 
 void cleanup(int sig)
 {
-    ROS_INFO("Stop Position Controller");
+    //ROS_INFO("Stop Position Controller");
     ros::shutdown();
 }
 
 //void handle_service()
 
-void control()
+void control(bool pid_enabled)
 {
-    if (pid_enabled == true)
+    if(pid_enabled == true)
     {
         bool setpoint_flag = false;
         bool trans_flag = false;
@@ -69,11 +69,13 @@ bool lookupTransform(const std::string &parent, const std::string &child, geomet
 {
     try
     {
-        trans = tfBuffer.lookupTransform(parent, child, ros::Time());
+        trans = buffer.lookupTransform(parent, child, ros::Time());
         return true;
     }
     except (tf2::ConnectivityException, tf2::LookupException, tf2::ExtrapolationException)
+    {
         return false;
+    }
 } 
 
 bool atSetpointPos()
@@ -87,12 +89,18 @@ bool atSetpointPos()
         double displacement;
         displacement = sqrt(disp.transform.translation.x**2 + disp.transform.translation.y**2);
         if (displacement <= deadband)
+        {
             return true;
+        }
         else
+        { 
             return false; 
+        }
     }
     else
+    {
         return false;
+    }
 }
 
 bool atSetpointYaw()
@@ -108,27 +116,33 @@ bool atSetpointYaw()
         double yaw, pitch, roll;
         tf2::Matri3x3(quat).getEulerYPR(yaw, pitch, roll);
         if (yaw <= deadband)
+        {
             return true;
+        }
         else
+        {
             return false;
+        }
     }
     else
+    {
         return false;
+    }
 }
 
-void callbackX(std_msgs::Float64::ConstPtr& msg)
-{
-    control_effort_x = msg->data;
+//void callbackX(std_msgs::Float64::ConstPtr& msg)
+void callbackX(std_msgs::Float64& msg){
+    control_effort_x = msg.data;
 }
 
-void callbackY(std_msgs::Float64::ConstPtr& msg)
+void callbackY(std_msgs::Float64& msg)
 {
-    control_effort_y = msg->data;
+    control_effort_y = msg.data;
 }
 
-void callbackYaw(std_msgs::Float64::ConstPtr& msg)
+void callbackYaw(std_msgs::Float64& msg)
 {
-    control_effort_yaw = msg->data;
+    control_effort_yaw = msg.data;
 }
 
 int main(int argc, char **argv)
@@ -156,12 +170,12 @@ int main(int argc, char **argv)
 
         ros::Publisher pub_cmd = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
 
-        PositionController pc();
+        PositionController pc;
         ros::Rate rate(50);
 
         while (ros::ok())
         {
-            pc.control();
+            pc.control(true);
             signal(SIGINT, cleanup);
             rate.sleep();
         }
