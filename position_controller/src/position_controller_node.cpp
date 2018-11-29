@@ -3,15 +3,16 @@
 
 //using namespace pose_con;
 
-
-
-void pose_con::PositionController::cleanup(int sig)
+namespace pose_con
+{
+    
+void PositionController::cleanup(int sig)
         {
             //ROS_INFO("Stop Position Controller");
             ros::shutdown();
         }
-
-bool pose_con::PositionController::lookupTransform(const std::string &parent, const std::string &child, geometry_msgs::TransformStamped &trans)
+        
+bool PositionController::lookupTransform(const std::string &parent, const std::string &child, geometry_msgs::TransformStamped &trans)
         {
             try
             {
@@ -37,7 +38,7 @@ bool pose_con::PositionController::lookupTransform(const std::string &parent, co
             } 
         } 
         
-bool pose_con::PositionController::atSetpointPos()
+bool PositionController::atSetpointPos()
         {
             double deadband = 0.01;
             bool disp_flag = false;
@@ -62,7 +63,7 @@ bool pose_con::PositionController::atSetpointPos()
             }
         }
 
-bool pose_con::PositionController::atSetpointYaw()
+bool PositionController::atSetpointYaw()
         {
             double deadband = 0.17453;
             bool disp_flag = false;
@@ -89,7 +90,7 @@ bool pose_con::PositionController::atSetpointYaw()
             }
         }
         
-void pose_con::PositionController::control()
+void PositionController::control()
         {
             if(pid_enabled == true)
             {
@@ -149,20 +150,21 @@ void pose_con::PositionController::control()
             } 
         }
         
-void pose_con::PositionController::callbackX(const std_msgs::Float64::ConstPtr& msg)
+void PositionController::callbackX(const std_msgs::Float64::ConstPtr& msg)
         {
             control_effort_x.data = msg->data;
         }
 
-void pose_con::PositionController::callbackY(const std_msgs::Float64::ConstPtr& msg)
+void PositionController::callbackY(const std_msgs::Float64::ConstPtr& msg)
         {
             control_effort_y.data = msg->data;
         }
 
-void pose_con::PositionController::callbackYaw(const std_msgs::Float64::ConstPtr& msg)
+void PositionController::callbackYaw(const std_msgs::Float64::ConstPtr& msg)
         {
             control_effort_yaw.data = msg->data;
         }
+};
 
 int main(int argc, char **argv)
 {
