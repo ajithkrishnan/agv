@@ -1,6 +1,9 @@
 # catkin requires minimum of 2.8.3 or higher
 cmake_minimum_required(VERSION 2.8.3)
 
+## Compile as C++11, supported in ROS Kinetic and newer
+add_compile_options(-std=c++11)
+
 # this is where the name of the catkin package is specified.
 # This name can be later referenced using ${PROJECT_NAME}
 project(position_controller)
