@@ -3,63 +3,15 @@
 
 //using namespace pose_con;
 
-class PositionController
-{
-    public:
 
-        //ros::Duration buffer_time = 10.0;
 
-        ros::NodeHandle nh;
-
-        ros::Publisher activator_x = nh.advertise<std_msgs::Bool>("/agv_mechanum/pid_x/pid_enable", 1);
-        ros::Publisher activator_y = nh.advertise<std_msgs::Bool>("/agv_mechanum/pid_y/pid_enable", 1);
-        ros::Publisher activator_yaw = nh.advertise<std_msgs::Bool>("/agv_mechanum/pid_yaw/pid_enable", 1);
-
-        ros::Publisher pub_pid_x_setpoint = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_x/setpoint", 1);
-        ros::Publisher pub_pid_y_setpoint = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_y/setpoint", 1);
-        ros::Publisher pub_pid_yaw_setpoint = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_yaw/setpoint", 1);
-        ros::Publisher pub_pid_x_state = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_x/state", 1);
-        ros::Publisher pub_pid_y_state = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_y/state", 1);
-        ros::Publisher pub_pid_yaw_state = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_yaw/state", 1);
-        ros::Subscriber sub_pid_x_effort = nh.subscribe("/agv_mechanum/pid_x/control_effort", 1, &PositionController::callbackX, this);
-        ros::Subscriber sub_pid_y_effort = nh.subscribe("/agv_mechanum/pid_y/control_effort", 1, &PositionController::callbackY, this);
-        ros::Subscriber sub_pid_yaw_effort = nh.subscribe("/agv_mechanum/pid_yaw/control_effort", 1, &PositionController::callbackYaw, this);
-
-        ros::Publisher pub_cmd = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
-        // DEBUG
-        //tf2_ros::Buffer buffer(ros::Duration(10));
-        //tf2_ros::Buffer buffer;
-        //tf2_ros::TransformListener tf(buffer);
-        //tf2_ros::TransformListener tlistener(buffer);
-
-        bool pid_enabled =true;
-        
-        geometry_msgs::Twist cmd;
-        // std_msgs::Float64 pos_x = 0.0, pos_y = 0.0, yaw = 0.0, sp_pos_x = 0.0, sp_pos_y = 0.0, sp_yaw = 0.0, control_effort_x = 0.0, control_effort_y = 0.0, control_effort_yaw = 0.0;
-        std_msgs::Float64 pos_x, pos_y, pos_yaw, sp_pos_x, sp_pos_y, sp_yaw, control_effort_x, control_effort_y, control_effort_yaw;
-        
-        void cleanup(int sig);
-        bool lookupTransform(const std::string &parent, const std::string &child, geometry_msgs::TransformStamped &trans);
-        //void handle_service()
-        bool atSetpointPos();
-        bool atSetpointYaw();
-        void control();
-        
-        void callbackX(const std_msgs::Float64::ConstPtr& msg);
-        void callbackY(const std_msgs::Float64::ConstPtr& msg);
-        void callbackYaw(const std_msgs::Float64::ConstPtr& msg);
-
-        //ROS_INFO("Start Position Controller");
-
-};
-
-void PositionController::cleanup(int sig)
+void pose_con::PositionController::cleanup(int sig)
         {
             //ROS_INFO("Stop Position Controller");
             ros::shutdown();
         }
 
-bool PositionController::lookupTransform(const std::string &parent, const std::string &child, geometry_msgs::TransformStamped &trans)
+bool pose_con::PositionController::lookupTransform(const std::string &parent, const std::string &child, geometry_msgs::TransformStamped &trans)
         {
             try
             {
@@ -85,7 +37,7 @@ bool PositionController::lookupTransform(const std::string &parent, const std::s
             } 
         } 
         
-bool PositionController::atSetpointPos()
+bool pose_con::PositionController::atSetpointPos()
         {
             double deadband = 0.01;
             bool disp_flag = false;
@@ -110,7 +62,7 @@ bool PositionController::atSetpointPos()
             }
         }
 
-bool PositionController::atSetpointYaw()
+bool pose_con::PositionController::atSetpointYaw()
         {
             double deadband = 0.17453;
             bool disp_flag = false;
@@ -137,7 +89,7 @@ bool PositionController::atSetpointYaw()
             }
         }
         
-void PositionController::control()
+void pose_con::PositionController::control()
         {
             if(pid_enabled == true)
             {
@@ -197,17 +149,17 @@ void PositionController::control()
             } 
         }
         
-void PositionController::callbackX(const std_msgs::Float64::ConstPtr& msg)
+void pose_con::PositionController::callbackX(const std_msgs::Float64::ConstPtr& msg)
         {
             control_effort_x.data = msg->data;
         }
 
-void PositionController::callbackY(const std_msgs::Float64::ConstPtr& msg)
+void pose_con::PositionController::callbackY(const std_msgs::Float64::ConstPtr& msg)
         {
             control_effort_y.data = msg->data;
         }
 
-void PositionController::callbackYaw(const std_msgs::Float64::ConstPtr& msg)
+void pose_con::PositionController::callbackYaw(const std_msgs::Float64::ConstPtr& msg)
         {
             control_effort_yaw.data = msg->data;
         }
@@ -222,7 +174,7 @@ int main(int argc, char **argv)
         ros::init(argc, argv, "PositionController");
         ros::start();
 
-        PositionController pc;
+        pose_con::PositionController pc;
        
         ros::Rate rate(50);
 
