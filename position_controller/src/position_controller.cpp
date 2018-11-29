@@ -1,8 +1,9 @@
 //#include <iostream>
 #include "position_controller/position_controller.h"
 
-
-void cleanup(int sig)
+namespace pose_con
+{
+void PositionController::cleanup(int sig)
 {
     //ROS_INFO("Stop Position Controller");
     ros::shutdown();
@@ -10,7 +11,7 @@ void cleanup(int sig)
 
 //void handle_service()
 
-void control(bool pid_enabled)
+void PositionController::control()
 {
     if(pid_enabled == true)
     {
@@ -65,7 +66,7 @@ void control(bool pid_enabled)
     } 
 }
 
-bool lookupTransform(const std::string &parent, const std::string &child, geometry_msgs::TransformStamped &trans)
+bool PositionController::lookupTransform(const std::string &parent, const std::string &child, geometry_msgs::TransformStamped &trans)
 {
     try
     {
@@ -78,7 +79,7 @@ bool lookupTransform(const std::string &parent, const std::string &child, geomet
     }
 } 
 
-bool atSetpointPos()
+bool PositionController::atSetpointPos()
 {
     double deadband = 0.01;
     bool disp_flag = false;
@@ -103,7 +104,7 @@ bool atSetpointPos()
     }
 }
 
-bool atSetpointYaw()
+bool PositionController::atSetpointYaw()
 {
     double deadband = 0.17453;
     bool disp_flag = false;
@@ -131,63 +132,36 @@ bool atSetpointYaw()
 }
 
 //void callbackX(std_msgs::Float64::ConstPtr& msg)
-void callbackX(std_msgs::Float64& msg){
+void PositionController::callbackX(std_msgs::Float64::ConstPtr& msg)
+{
     control_effort_x = msg.data;
 }
 
-void callbackY(std_msgs::Float64& msg)
+void PositionController::callbackY(std_msgs::Float64::ConstPtr& msg)
 {
     control_effort_y = msg.data;
 }
 
-void callbackYaw(std_msgs::Float64& msg)
+void PositionController::callbackYaw(std_msgs::Float64::ConstPtr& msg)
 {
     control_effort_yaw = msg.data;
 }
 
-int main(int argc, char **argv)
-{
-    try
-    {
-        ros::init(argc, argv, "PositionController", ros::init_options::NoSigintHandler);
-        ros::start();
+ros::Publisher activator_x = nh.advertise<std_msgs::Bool>("/agv_mechanum/pid_x/pid_enable", 1);
+ros::Publisher activator_y = nh.advertise<std_msgs::Bool>("/agv_mechanum/pid_y/pid_enable", 1);
+ros::Publisher activator_yaw = nh.advertise<std_msgs::Bool>("/agv_mechanum/pid_yaw/pid_enable", 1);
 
-        ros::NodeHandle nh;
+ros::Publisher pub_pid_x_setpoint = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_x/setpoint", 1);
+ros::Publisher pub_pid_y_setpoint = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_y/setpoint", 1);
+ros::Publisher pub_pid_yaw_setpoint = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_yaw/setpoint", 1);
+ros::Publisher pub_pid_x_state = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_x/state", 1);
+ros::Publisher pub_pid_y_state = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_y/state", 1);
+ros::Publisher pub_pid_yaw_state = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_yaw/state", 1);
+ros::Subscriber sub_pid_x_effort = nh.subscribe("/agv_mechanum/pid_x/control_effort", 1, callbackX);
+ros::Subscriber sub_pid_y_effort = nh.subscribe("/agv_mechanum/pid_y/control_effort", 1, callbackY);
+ros::Subscriber sub_pid_yaw_effort = nh.subscribe("/agv_mechanum/pid_yaw/control_effort", 1, callbackYaw);
 
-        ros::Publisher activator_x = nh.advertise<std_msgs::Bool>("/agv_mechanum/pid_x/pid_enable", 1);
-        ros::Publisher activator_y = nh.advertise<std_msgs::Bool>("/agv_mechanum/pid_y/pid_enable", 1);
-        ros::Publisher activator_yaw = nh.advertise<std_msgs::Bool>("/agv_mechanum/pid_yaw/pid_enable", 1);
+ros::Publisher pub_cmd = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
 
-        ros::Publisher pub_pid_x_setpoint = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_x/setpoint", 1);
-        ros::Publisher pub_pid_y_setpoint = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_y/setpoint", 1);
-        ros::Publisher pub_pid_yaw_setpoint = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_yaw/setpoint", 1);
-        ros::Publisher pub_pid_x_state = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_x/state", 1);
-        ros::Publisher pub_pid_y_state = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_y/state", 1);
-        ros::Publisher pub_pid_yaw_state = nh.advertise<std_msgs::Float64>("/agv_mechanum/pid_yaw/state", 1);
-        ros::Subscriber sub_pid_x_effort = nh.subscribe("/agv_mechanum/pid_x/control_effort", 1, callbackX);
-        ros::Subscriber sub_pid_y_effort = nh.subscribe("/agv_mechanum/pid_y/control_effort", 1, callbackY);
-        ros::Subscriber sub_pid_yaw_effort = nh.subscribe("/agv_mechanum/pid_yaw/control_effort", 1, callbackYaw);
+};
 
-        ros::Publisher pub_cmd = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
-
-        PositionController pc;
-        ros::Rate rate(50);
-
-        while (ros::ok())
-        {
-            pc.control(true);
-            signal(SIGINT, cleanup);
-            rate.sleep();
-        }
-    }
-
-    catch(ros::Exception)
-    {
-        return(0);
-    }
-
-    
-    //ros::shutdown();
-
-    return(0);    
-}

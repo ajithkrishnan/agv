@@ -46,7 +46,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 # specifiying the executable target name and the source file it is 
 # generated from
-add_executable(positionController src/position_controller.cpp)
+add_executable(positionController src/position_controller_node.cpp)
 
 # specifying the libraries the executable depends on
 # add_library(${PROJECT_NAME} ${${PROJECT_NAME}_SRCS})

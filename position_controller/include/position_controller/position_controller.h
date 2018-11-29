@@ -20,21 +20,21 @@
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
 
+namespace pose_con
+{
 class PositionController
 {
     public:
 
-        //ros::Duration buffer_time(10.0);
-        tf2_ros::Buffer buffer();
-        tf2_ros::TransformListener tlistener(buffer);
-        
+        PositionController(tf2_ros::Buffer& buffer);       
+
         bool pid_enabled =true;
         
         geometry_msgs::Twist cmd;
         // std_msgs::Float64 pos_x = 0.0, pos_y = 0.0, yaw = 0.0, sp_pos_x = 0.0, sp_pos_y = 0.0, sp_yaw = 0.0, control_effort_x = 0.0, control_effort_y = 0.0, control_effort_yaw = 0.0;
         std_msgs::Float64 pos_x, pos_y, yaw, sp_pos_x, sp_pos_y, sp_yaw, control_effort_x, control_effort_y, control_effort_yaw;
 
-        void control(bool pid_enabled);
+        void control();
         bool lookupTransform(const std::string &parent, const std::string &child, geometry_msgs::TransformStamped &trans);
         void cleanup(int sig);
 
@@ -46,6 +46,7 @@ class PositionController
         
         //ROS_INFO("Start Position Controller");
 
+};
 };
 
 #endif
