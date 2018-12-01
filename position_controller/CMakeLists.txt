@@ -49,12 +49,12 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 # specifiying the executable target name and the source file it is 
 # generated from
-add_executable(positionController src/position_controller_node.cpp)
+add_executable(position_controller_node src/position_controller_node.cpp)
 
 # specifying the libraries the executable depends on
 # add_library(${PROJECT_NAME} ${${PROJECT_NAME}_SRCS})
 
 # This is used to specify which libraries the executable links against
 # catkin_LIBRARIES is used if "ros is not found"
-target_link_libraries(positionController ${catkin_LIBRARIES})
+target_link_libraries(position_controller_node ${catkin_LIBRARIES})
 

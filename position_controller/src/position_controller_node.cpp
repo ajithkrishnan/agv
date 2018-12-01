@@ -1,5 +1,6 @@
 #include "position_controller/position_controller.h"
 #include <std_msgs/Float64.h>
+#include "../src/position_controller.cpp"
 
 //using namespace pose_con;
 
@@ -11,7 +12,7 @@ int main(int argc, char **argv)
     {
 
         //ros::init(argc, argv, "PositionController", ros::init_options::NoSigintHandler);
-        ros::init(argc, argv, "PositionController");
+        ros::init(argc, argv, "position_controller_node");
         ros::start();
 
         pose_con::PositionController pc;
