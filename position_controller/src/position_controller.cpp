@@ -17,7 +17,8 @@ bool PositionController::lookupTransform(const std::string &parent, const std::s
             {
                 tf2_ros::Buffer buffer(ros::Duration(10.0));
                 //tf2_ros::TransformListener tlistener(buffer);
-                trans = buffer.lookupTransform(parent, child, ros::Time());
+                
+                trans = buffer.lookupTransform(parent, child, ros::Time(0));
                 return true;
             }
             catch (tf2::LookupException& ex)
