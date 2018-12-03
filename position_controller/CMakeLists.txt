@@ -152,6 +152,10 @@ add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catk
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_node ${catkin_LIBRARIES})
 
+add_executable(setpoint_broadcaster_node src/setpoint_broadcaster.cpp)
+add_dependencies(setpoint_broadcaster_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(setpoint_broadcaster_node ${catkin_LIBRARIES})
+
 #############
 ## Install ##
 #############

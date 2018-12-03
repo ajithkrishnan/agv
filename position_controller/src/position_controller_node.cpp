@@ -1,6 +1,6 @@
 #include "../include/position_controller/position_controller.h"
-#include <std_msgs/Float64.h>
-#include "../src/position_controller.cpp"
+//#include <std_msgs/Float64.h>
+#include "position_controller.cpp"
 
 //using namespace pose_con;
 
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
         return(0);
     }
     
-    //ros::shutdown();
+    ros::shutdown();
 
     return(0);    
 }

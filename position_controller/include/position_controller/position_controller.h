@@ -3,7 +3,7 @@
 
 #include <cmath>
 #include <sys/time.h>
-#include <string>
+#include <string.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <ros/duration.h>
