@@ -51,7 +51,7 @@
      </node>
     <node pkg="position_controller" type="setpoint_broadcaster.py" name="setpoint_broadcaster" output="screen"/>
     <!-- node pkg="position_controller" type="trajectory_planner.py" name="trajectory_planner" output="screen"/ -->
-    <!-- node pkg="position_controller" type="position_controller_node" name="position_controller_node" output="screen"/-->
-     <!-- node pkg="position_controller" type="position_controller.py" name="position_controller_node" output="screen"/-->
+    <!--node pkg="position_controller" type="position_controller_node" name="position_controller_node" output="screen"/-->
+     <node pkg="position_controller" type="position_controller.py" name="position_controller_node" output="screen"/>
     
 </launch>

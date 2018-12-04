@@ -1,11 +1,12 @@
 #include <iostream>
-#include "../include/position_controller/setpoint_broadcaster.h"
+#include "../include/position_controller/position_controller.h"
 
-namespace broadcast
+namespace pose_con
 {
     void SetpointBroadcaster::callbackSetpoint(const geometry_msgs::PoseStamped::ConstPtr& msg)
     {
- 
+        tr.header.frame_id = "odom";
+        tr.child_frame_id = "setpoint_pose";
         tr.transform.translation.x = msg->pose.position.x;
         tr.transform.translation.y = msg->pose.position.y;
         tr.transform.translation.z = msg->pose.position.z;

@@ -25,9 +25,7 @@ namespace broadcast
 
             geometry_msgs::PoseStamped setpoint;
             geometry_msgs::TransformStamped tr;
-            tr.header.frame_id = "odom";
-            tr.child_frame_id = "setpoint_pose";
-            
+                        
             //rospy.on_shutdown
             
             void callbackSetpoint(const geometry_msgs::PoseStamped::ConstPtr& msg);

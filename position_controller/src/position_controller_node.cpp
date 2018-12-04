@@ -16,11 +16,13 @@ int main(int argc, char **argv)
         ros::start();
 
         pose_con::PositionController pc;
+        pose_con::SetpointBroadcaster sp;
        
         ros::Rate rate(50);
 
         while (ros::ok())
         {
+            sp.broadcastSetpoint();
             pc.control();
             //signal(SIGINT, pc.cleanup;
             rate.sleep();
