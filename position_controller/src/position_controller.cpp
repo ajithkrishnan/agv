@@ -1,4 +1,4 @@
-//#include <iostream>
+#include <iostream>
 #include "../include/position_controller/position_controller.h"
 
 
@@ -21,11 +21,11 @@ bool PositionController::lookupTransform(const std::string &parent, const std::s
                 trans = buffer.lookupTransform(parent, child, ros::Time(0));
                 return true;
             }
-            catch (tf2::LookupException& ex)
+            /*catch (tf2::LookupException& ex)
             {    
               ROS_ERROR_THROTTLE(1.0, "No Transform available Error looking up robot pose: %s\n", ex.what());
               return false;
-            }    
+            }*/    
             catch (tf2::ConnectivityException& ex)                                                                             
             {    
               ROS_ERROR_THROTTLE(1.0, "Connectivity Error looking up robot pose: %s\n", ex.what());
