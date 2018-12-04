@@ -100,16 +100,16 @@ class SetpointBroadcaster(object):
             self.setpoint.pose.orientation.y = i.pose.orientation.y
             self.setpoint.pose.orientation.z = i.pose.orientation.z
             self.setpoint.pose.orientation.w = i.pose.orientation.w
-            self.pub_sp(self.setpoint)
+            self.pub_sp.publish(self.setpoint)
             
     def callbackSetpointTransform(self, msg):
-        self.t.transform.translation.x = msg.pose.pose.position.x
-        self.t.transform.translation.y = msg.pose.pose.position.y
-        self.t.transform.translation.z = msg.pose.pose.position.z
-        self.t.transform.rotation.x = msg.pose.pose.orientation.x
-        self.t.transform.rotation.y = msg.pose.pose.orientation.y
-        self.t.transform.rotation.z = msg.pose.pose.orientation.z
-        self.t.transform.rotation.w = msg.pose.pose.orientation.w
+        self.t.transform.translation.x = msg.pose.position.x
+        self.t.transform.translation.y = msg.pose.position.y
+        self.t.transform.translation.z = msg.pose.position.z
+        self.t.transform.rotation.x = msg.pose.orientation.x
+        self.t.transform.rotation.y = msg.pose.orientation.y
+        self.t.transform.rotation.z = msg.pose.orientation.z
+        self.t.transform.rotation.w = msg.pose.orientation.w
         
     
     def handle_service(self, req):
@@ -132,7 +132,7 @@ class SetpointBroadcaster(object):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description = __doc__)
     # Accept control rate. Default is 20 hz.
-    parser.add_argument("--rate", help="Broadcast rate", type=float, default=20.0)
+    parser.add_argument("--rate", help="Broadcast rate", type=float, default=5.0)
     args, unknown = parser.parse_known_args()
 
     try:
