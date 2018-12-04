@@ -24,7 +24,7 @@
 </node-->
 
 <node pkg="amcl" type="amcl" name="amcl" output="screen">
-      <remap from="scan" to="/front_laser/scan"/>
+      <remap from="scan" to="merged_scan"/>
       <param name="TrajectoryPlannerROS/map_frame" value="map"/>
       <param name="odom_frame_id" value="odom"/>
       <param name="base_frame_id" value="agv_base_link"/>
