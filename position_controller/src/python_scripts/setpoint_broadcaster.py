@@ -46,6 +46,7 @@ import tf
 import tf2_ros
 
 from geometry_msgs.msg import Twist, TransformStamped, PoseStamped
+from nav_msgs.msg import Path
 from std_msgs.msg import Float64
 # from summit_xl_a_msgs.srv import *
 
@@ -62,12 +63,14 @@ class SetpointBroadcaster(object):
         self.br = tf2_ros.TransformBroadcaster()
         # using Topic AND Service for handling single and looping pose change
         # self.service = rospy.Service('/agv_mecanum/setpoint_pose', SetPose, self.handle_service)
-        self.sub_sp = rospy.Subscriber("/agv_mecanum/sp_pose", PoseStamped, self.callbackSetpoint)
+        self.sub_sp = rospy.Subscriber("/move_base/TebLocalPlannerROS/local_plan", Path, self.callbackSetpoint)
+        self.sub_sp_transform = rospy.Subscriber("/agv_mecanum/sp_pose", PoseStamped, self.callbackSetpointTransform)
+        self.pub_sp = rospy.Publisher("/agv_mecanum/sp_pose", PoseStamped, queue_size=100)
 
         self.setpoint = PoseStamped()
         self.t = TransformStamped()
-        #self.t.header.frame_id = "odom"
-        self.t.header.frame_id = "agv_base_footprint"
+        self.t.header.frame_id = "odom"
+        #self.t.header.frame_id = "agv_base_footprint"
         self.t.child_frame_id = "setpoint_pose"
         self.t.transform.translation.x = 0
         self.t.transform.translation.y = 0
@@ -89,14 +92,25 @@ class SetpointBroadcaster(object):
         time.sleep(0.5)
 
     def callbackSetpoint(self, msg):
-        self.t.transform.translation.x = msg.pose.position.x
-        self.t.transform.translation.y = msg.pose.position.y
-        self.t.transform.translation.z = msg.pose.position.z
-        self.t.transform.rotation.x = msg.pose.orientation.x
-        self.t.transform.rotation.y = msg.pose.orientation.y
-        self.t.transform.rotation.z = msg.pose.orientation.z
-        self.t.transform.rotation.w = msg.pose.orientation.w
-
+        for i in msg.poses: 
+            self.setpoint.pose.position.x = i.pose.position.x
+            self.setpoint.pose.position.y = i.pose.position.y
+            self.setpoint.pose.position.z = i.pose.position.z
+            self.setpoint.pose.orientation.x = i.pose.orientation.x
+            self.setpoint.pose.orientation.y = i.pose.orientation.y
+            self.setpoint.pose.orientation.z = i.pose.orientation.z
+            self.setpoint.pose.orientation.w = i.pose.orientation.w
+            self.pub_sp(self.setpoint)
+            
+    def callbackSetpointTransform(self, msg):
+        self.t.transform.translation.x = msg.pose.pose.position.x
+        self.t.transform.translation.y = msg.pose.pose.position.y
+        self.t.transform.translation.z = msg.pose.pose.position.z
+        self.t.transform.rotation.x = msg.pose.pose.orientation.x
+        self.t.transform.rotation.y = msg.pose.pose.orientation.y
+        self.t.transform.rotation.z = msg.pose.pose.orientation.z
+        self.t.transform.rotation.w = msg.pose.pose.orientation.w
+        
     
     def handle_service(self, req):
         self.t.transform.translation.x = req.pose.pose.position.x
