@@ -70,26 +70,24 @@ void LaserscanMerger::reconfigureCallback(laserscan_multi_mergerConfig &config, 
 
 void LaserscanMerger::laserscan_topic_parser()
 {
-	// LaserScan topics to subscribe
-	ros::master::V_TopicInfo topics;
-	ros::master::getTopics(topics);
-
+    // LaserScan topics to subscribe
+    ros::master::V_TopicInfo topics;
+    ros::master::getTopics(topics);
     istringstream iss(laserscan_topics);
-	vector<string> tokens;
-	copy(istream_iterator<string>(iss), istream_iterator<string>(), back_inserter<vector<string> >(tokens));
+    vector<string> tokens;
+    copy(istream_iterator<string>(iss), istream_iterator<string>(), back_inserter<vector<string> >(tokens));
+    vector<string> tmp_input_topics;
+    for(int i=0;i<tokens.size();++i)
+    {
+//          for(int j=0;j<topics.size();++j)
+//      {
+//          if( (tokens[i].compare(topics[j].name) == 0) && (topics[j].datatype.compare("sensor_msgs/LaserScan") == 0) )
+//          {
+                tmp_input_topics.push_back(tokens[i]);
+//          }
+//      }
+    }
 
-	vector<string> tmp_input_topics;
-
-	for(int i=0;i<tokens.size();++i)
-	{
-	        for(int j=0;j<topics.size();++j)
-		{
-			if( (tokens[i].compare(topics[j].name) == 0) && (topics[j].datatype.compare("sensor_msgs/LaserScan") == 0) )
-			{
-				tmp_input_topics.push_back(topics[j].name);
-			}
-		}
-	}
 
 	sort(tmp_input_topics.begin(),tmp_input_topics.end());
 	std::vector<string>::iterator last = std::unique(tmp_input_topics.begin(), tmp_input_topics.end());
