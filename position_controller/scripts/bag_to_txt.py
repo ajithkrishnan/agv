@@ -3,13 +3,8 @@
 
 # Copyright 2016 Massachusetts Institute of Technology
 
-"""Extract images from a rosbag.
-"""
-
 import os
 import argparse
-
-import cv2
 
 import rosbag
 from sensor_msgs.msg import Image
@@ -18,7 +13,7 @@ from nav_msgs.msg import Odometry, Path
 from tf.transformations import euler_from_quaternion
 
 def main():
-    """Extract a folder of images from a rosbag.
+    """Extract Odometry Info from a rosbag.
     """
     parser = argparse.ArgumentParser(description="Extract odom from a ROS bag.")
     parser.add_argument("bag_file", help="Input ROS bag.")
@@ -75,11 +70,6 @@ def main():
             f_plan.write("poses " + str(count) + "\t" + str(t.secs) + "." + str(t.nsecs) + "\t" +
                 str(x) + "\t" + str(y) + "\t" + str(yaw) + "\n")
     
-       #f.write(str(t.to_nsec()
-        #/1E3)+"\t"+("frame%06i.png" % count)+"\n")
-    
-        #f_odom.write(str(t.secs)+"."+str(time_nsecs) + "\t" + str(x)+ "\t" + str(y) + "\t" + str(yaw) + "\n")
-
 
             count += 1
 
