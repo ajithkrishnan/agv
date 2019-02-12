@@ -1,1 +1,4 @@
 youbot_simulation/*
+
+position_controller/scripts/*.txt
+position_controller/bagfiles/*

@@ -34,11 +34,6 @@
 # Requirements: 
 # sudo apt-get install python-argparse
 
-"""
-The Kinect provides the color and depth images in an un-synchronized way. This means that the set of time stamps from the color images do not intersect with those of the depth images. Therefore, we need some way of associating color images to depth images.
-
-For this purpose, you can use the ''associate.py'' script. It reads the time stamps from the rgb.txt file and the depth.txt file, and joins them by finding the best matches.
-"""
 
 import argparse
 import sys
@@ -53,7 +48,8 @@ def read_file_list(filename):
     Reads a Pose from a text file. 
     
     File format:
-    The file format is "stamp x y yaw  where stamp denotes the time stamp
+    The file format is "stamp x y yaw  where stamp denotes the time stamp 
+    and x, y and yaw denote the Pose 
     
     """
     file = open(filename)
@@ -66,25 +62,13 @@ def read_file_list(filename):
     list = [[float(l[0]),float(l[1]), float(l[2]), float(l[3])] for l in list if len(l)>1]
     return list
 
-if __name__ == '__main__':
-    
-    # parse command line
-    parser = argparse.ArgumentParser(description='''
-    This script extracts a trajectory from a txt file and plots it    
-    ''')
-    parser.add_argument('odom_file', help='odom text file (format: AMCL Odometry data)')
-    #parser.add_argument('second_file', help='second text file (format: Global Plan data)')
-    args = parser.parse_args()
-
-    tools.set_credentials_file(username='ajithkrishnanbm', api_key='MCCZv2hEgYCcbPL9gQ92')
-
-    odom_list = read_file_list(args.odom_file)
+def plot(pose_list):
     pose_list_x = []
     pose_list_y = []
-    yaw_list = []
+    pose_yaw_list = []
     time_list = []
 
-    for pose in odom_list:
+    for pose in pose_list:
         time = pose[0]
         pose_x = pose[1]
         pose_y = pose[1]
@@ -92,13 +76,15 @@ if __name__ == '__main__':
 
         pose_list_x.append(pose_x)
         pose_list_y.append(pose_y)
-        yaw_list.append(yaw)
+        pose_yaw_list.append(yaw)
         time_list.append(time)
-        
+
     trace_x = go.Scatter(x=time_list, y=pose_list_x, name='x')
     trace_y = go.Scatter(x=time_list, y=pose_list_y, name='y')
-    trace_yaw = go.Scatter(x=time_list, y=yaw_list, name='yaw')
+    trace_yaw = go.Scatter(x=time_list, y=pose_yaw_list, name='yaw')
 
+    # DEPRECATED
+    #data = [trace_x, trace_y, trace_yaw]
     #fig = tools.make_subplots(rows=3, cols=1, specs=[[{}], [{}], [{}]], shared_xaxes=True, shared_yaxes=True)
 
     #fig.append_trace(trace_x, 3, 1)
@@ -107,17 +93,68 @@ if __name__ == '__main__':
 
     #fig['layout'].update(height=600, width=600, title='AGV odometry')
     #py.plot(fig, filename='odom_plotly')
+    
+    return trace_x, trace_y, trace_yaw 
 
-    data = [trace_x, trace_y, trace_yaw]
-    layout = go.Layout(
+if __name__ == '__main__':
+    
+    # parse command line
+    parser = argparse.ArgumentParser(description='''
+    This script extracts a trajectory from a txt file and plots it    
+    ''')
+    parser.add_argument('odom_file', help='odom text file (format: AMCL Odometry data)')
+    parser.add_argument('plan_file', help='plan text file (format: move_base plan data)')
+
+    args = parser.parse_args()
+
+    tools.set_credentials_file(username='ajithkrishnanbm', api_key='MCCZv2hEgYCcbPL9gQ92')
+
+    odom_list = read_file_list(args.odom_file)
+    plan_list = read_file_list(args.plan_file)
+
+    traces_x = []
+    traces_y = []
+    traces_yaw = []
+    trace_x, trace_y, trace_yaw = plot(odom_list)
+    traces_x.append(trace_x)
+    traces_y.append(trace_y)
+    traces_yaw.append(trace_yaw)
+
+    trace_x, trace_y, trace_yaw = plot(plan_list)
+    traces_x.append(trace_x)
+    traces_y.append(trace_y)
+    traces_yaw.append(trace_yaw)
+        
+    layout_x = go.Layout(
             title='AGV odometry',
             xaxis=dict(title='Timestamp'),
-            yaxis=dict(title='Odometry'),
+            yaxis=dict(title='Odometry X'),
             legend=dict(traceorder='reversed'),
             )
 
-    fig = go.Figure(data=data, layout=layout)
-    py.plot(fig, filename='AGV Odomentry - stacked')
+    layout_y = go.Layout(
+            title='AGV odometry',
+            xaxis=dict(title='Timestamp'),
+            yaxis=dict(title='Odometry Y'),
+            legend=dict(traceorder='reversed'),
+            )
+   
+    layout_yaw = go.Layout(
+            title='AGV odometry',
+            xaxis=dict(title='Timestamp'),
+            yaxis=dict(title='Odometry Yaw'),
+            legend=dict(traceorder='reversed'),
+            )
+
+    fig_x = go.Figure(data=traces_x, layout=layout_x)
+    fig_y = go.Figure(data=traces_y, layout=layout_y)
+    fig_yaw = go.Figure(data=traces_yaw, layout=layout_yaw)
+
+    py.plot(fig_x, filename='AGV Odomentry - stacked x')
+    py.plot(fig_y, filename='AGV Odomentry - stacked y')
+    py.plot(fig_yaw, filename='AGV Odomentry - stacked yaw')
+
+
 
     
     
