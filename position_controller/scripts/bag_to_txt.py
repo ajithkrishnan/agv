@@ -25,38 +25,43 @@ def extract(msg):
 def main():
     """Extract Odometry Info from a rosbag.
     """
-    parser = argparse.ArgumentParser(description="Extract odom from a ROS bag.")
+    parser = argparse.ArgumentParser(description="Extract pose and plan from a ROS bag.")
     parser.add_argument("bag_file", help="Input ROS bag.")
     parser.add_argument("output_dir", help="Output directory.")
-    parser.add_argument("odom_topic", help="odom topic.")
+    parser.add_argument("pose_topic", help="pose topic.")
     parser.add_argument("plan_topic", help="Global plan topic.")    
 
     args = parser.parse_args()
 
-    print "\nExtracting plan from %s on topic %s into %s" % (args.bag_file,
+    print "\nExtracting pose from %s on topic %s into %s/pose.txt" % (args.bag_file,
+                                                          args.pose_topic, args.output_dir)
+    print "\nExtracting plan from %s on topic %s into %s/plan.txt" % (args.bag_file,
                                                           args.plan_topic, args.output_dir)
-    print "\nExtracting odom from %s on topic %s into %s" % (args.bag_file,
-                                                          args.odom_topic, args.output_dir)
 
     bag = rosbag.Bag(args.bag_file, "r")
-    f_odom= open(args.output_dir+"odom.txt","w+")
+    f_pose= open(args.output_dir+"pose.txt","w+")
     f_plan = open(args.output_dir+"plan.txt", "w+")
 
     count = 0
 
-    for topic, msg, t in bag.read_messages(topics=[args.odom_topic, args.plan_topic]):
+    print(bag)
+
+    for topic, msg, t in bag.read_messages(topics=[args.pose_topic, args.plan_topic]):
         
+        #print("entered for loop")
         # ODOM extraction
 
-        if (topic==args.odom_topic):
-            x, y, yaw = extract(msg.pose)
+        if (topic==args.pose_topic):
+            #print(msg.pose)
+            x, y, yaw = extract(msg)
 
-            f_odom.write(str(t.secs) + "." + str(t.nsecs) + "\t" +
+            f_pose.write(str(t.secs) + "." + str(t.nsecs) + "\t" +
                 str(x) + "\t" + str(y) + "\t" + str(yaw) + "\n")
 
         elif (topic==args.plan_topic):
 
             # PLAN extraction
+            #print("extracting plan")
 
             if (count < len(msg.poses)):
 
@@ -68,7 +73,7 @@ def main():
             count += 1
 
     bag.close()
-    f_odom.close() 
+    f_pose.close() 
     f_plan.close()
 
     return

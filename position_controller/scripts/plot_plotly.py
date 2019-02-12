@@ -102,20 +102,20 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='''
     This script extracts a trajectory from a txt file and plots it    
     ''')
-    parser.add_argument('odom_file', help='odom text file (format: AMCL Odometry data)')
+    parser.add_argument('pose_file', help='pose text file (format: AMCL Odometry data)')
     parser.add_argument('plan_file', help='plan text file (format: move_base plan data)')
 
     args = parser.parse_args()
 
     tools.set_credentials_file(username='ajithkrishnanbm', api_key='MCCZv2hEgYCcbPL9gQ92')
 
-    odom_list = read_file_list(args.odom_file)
+    pose_list = read_file_list(args.pose_file)
     plan_list = read_file_list(args.plan_file)
 
     traces_x = []
     traces_y = []
     traces_yaw = []
-    trace_x, trace_y, trace_yaw = plot(odom_list)
+    trace_x, trace_y, trace_yaw = plot(pose_list)
     traces_x.append(trace_x)
     traces_y.append(trace_y)
     traces_yaw.append(trace_yaw)
