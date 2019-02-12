@@ -1,4 +1,5 @@
 youbot_simulation/*
 
 position_controller/scripts/*.txt
+position_controller/scripts/*.swp
 position_controller/bagfiles/*
