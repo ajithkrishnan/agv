@@ -49,11 +49,13 @@ def main():
     for topic, msg, t in bag.read_messages(topics=[args.pose_topic, args.plan_topic]):
         
         #print("entered for loop")
+
         # ODOM extraction
 
         if (topic==args.pose_topic):
-            #print(msg.pose)
-            x, y, yaw = extract(msg)
+            #print(msg.pose.pose)
+            x, y, yaw = extract(msg.pose)
+            #x, y, yaw = extract(msg.pose.pose)
 
             f_pose.write(str(t.secs) + "." + str(t.nsecs) + "\t" +
                 str(x) + "\t" + str(y) + "\t" + str(yaw) + "\n")

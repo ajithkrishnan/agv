@@ -62,7 +62,7 @@ def read_file_list(filename):
     list = [[float(l[0]),float(l[1]), float(l[2]), float(l[3])] for l in list if len(l)>1]
     return list
 
-def plot(pose_list):
+def plot(pose_list, legend):
     pose_list_x = []
     pose_list_y = []
     pose_yaw_list = []
@@ -79,6 +79,7 @@ def plot(pose_list):
         pose_yaw_list.append(yaw)
         time_list.append(time)
 
+    trace_xy = go.Scatter(x=pose_list_x, y=pose_list_y, name=legend)
     trace_x = go.Scatter(x=time_list, y=pose_list_x, name='x')
     trace_y = go.Scatter(x=time_list, y=pose_list_y, name='y')
     trace_yaw = go.Scatter(x=time_list, y=pose_yaw_list, name='yaw')
@@ -94,7 +95,8 @@ def plot(pose_list):
     #fig['layout'].update(height=600, width=600, title='AGV odometry')
     #py.plot(fig, filename='odom_plotly')
     
-    return trace_x, trace_y, trace_yaw 
+    #return trace_x, trace_y, trace_yaw 
+    return trace_xy
 
 if __name__ == '__main__':
     
@@ -115,47 +117,62 @@ if __name__ == '__main__':
     traces_x = []
     traces_y = []
     traces_yaw = []
-    trace_x, trace_y, trace_yaw = plot(pose_list)
-    traces_x.append(trace_x)
-    traces_y.append(trace_y)
-    traces_yaw.append(trace_yaw)
+    #trace_x, trace_y, trace_yaw = plot(pose_list, 'ground_truth')
+    #traces_x.append(trace_x)
+    #traces_y.append(trace_y)
+    #traces_yaw.append(trace_yaw)
 
-    trace_x, trace_y, trace_yaw = plot(plan_list)
-    traces_x.append(trace_x)
-    traces_y.append(trace_y)
-    traces_yaw.append(trace_yaw)
-        
-    layout_x = go.Layout(
-            title='AGV odometry',
-            xaxis=dict(title='Timestamp'),
-            yaxis=dict(title='Odometry X'),
-            legend=dict(traceorder='reversed'),
-            )
+    #trace_x, trace_y, trace_yaw = plot(plan_list, 'global_plan')
+    #traces_x.append(trace_x)
+    #traces_y.append(trace_y)
+    #traces_yaw.append(trace_yaw)
+    #    
+    #layout_x = go.Layout(
+    #        title='AGV odometry',
+    #        xaxis=dict(title='Timestamp'),
+    #        yaxis=dict(title='Odometry X'),
+    #        legend=dict(traceorder='reversed'),
+    #        )
 
-    layout_y = go.Layout(
+    #layout_y = go.Layout(
+    #        title='AGV odometry',
+    #        xaxis=dict(title='Timestamp'),
+    #        yaxis=dict(title='Odometry Y'),
+    #        legend=dict(traceorder='reversed'),
+    #        )
+   
+    #layout_yaw = go.Layout(
+    #        title='AGV odometry',
+    #        xaxis=dict(title='Timestamp'),
+    #        yaxis=dict(title='Odometry Yaw'),
+    #        legend=dict(traceorder='reversed'),
+    #        )
+
+    #fig_x = go.Figure(data=traces_x, layout=layout_x)
+    #fig_y = go.Figure(data=traces_y, layout=layout_y)
+    #fig_yaw = go.Figure(data=traces_yaw, layout=layout_yaw)
+
+    #py.plot(fig_x, filename='AGV Odomentry - stacked x')
+    #py.plot(fig_y, filename='AGV Odomentry - stacked y')
+    #py.plot(fig_yaw, filename='AGV Odomentry - stacked yaw')
+    
+    traces_xy = []
+    trace_xy = plot(pose_list, 'ground_truth')
+    traces_xy.append(trace_xy)
+
+    trace_xy = plot(plan_list, 'global_plan')
+    traces_xy.append(trace_xy)
+
+    layout_xy = go.Layout(
             title='AGV odometry',
-            xaxis=dict(title='Timestamp'),
+            xaxis=dict(title='Odometry X'),
             yaxis=dict(title='Odometry Y'),
             legend=dict(traceorder='reversed'),
             )
-   
-    layout_yaw = go.Layout(
-            title='AGV odometry',
-            xaxis=dict(title='Timestamp'),
-            yaxis=dict(title='Odometry Yaw'),
-            legend=dict(traceorder='reversed'),
-            )
 
-    fig_x = go.Figure(data=traces_x, layout=layout_x)
-    fig_y = go.Figure(data=traces_y, layout=layout_y)
-    fig_yaw = go.Figure(data=traces_yaw, layout=layout_yaw)
+    fig_xy = go.Figure(data=traces_xy, layout=layout_xy)
 
-    py.plot(fig_x, filename='AGV Odomentry - stacked x')
-    py.plot(fig_y, filename='AGV Odomentry - stacked y')
-    py.plot(fig_yaw, filename='AGV Odomentry - stacked yaw')
-
-
-
+    py.plot(fig_xy, filename='AGV Odomentry - stacked xy')
     
     
 
