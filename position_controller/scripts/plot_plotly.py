@@ -1,102 +1,39 @@
-#!/usr/bin/python
-# Software License Agreement (BSD License)
-#
-# Copyright (c) 2013, Juergen Sturm, TUM
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions
-# are met:
-#
-#  * Redistributions of source code must retain the above copyright
-#    notice, this list of conditions and the following disclaimer.
-#  * Redistributions in binary form must reproduce the above
-#    copyright notice, this list of conditions and the following
-#    disclaimer in the documentation and/or other materials provided
-#    with the distribution.
-#  * Neither the name of TUM nor the names of its
-#    contributors may be used to endorse or promote products derived
-#    from this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-# COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
-#
-# Requirements: 
-# sudo apt-get install python-argparse
+#!/usr/bin/env python
 
 
-import argparse
-import sys
-import os
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
 import numpy as np
-from plotly import tools
-import plotly.plotly as py
+import pandas as pd
 import plotly.graph_objs as go
+import plotly.tools as tls
+import time
+import plotly
+import glob
 
-def read_file_list(filename):
-    """
-    Reads a Pose from a text file. 
+
+plotly.offline.init_notebook_mode(connected=True)  
+
+
+def plot(data_plan, data_pose):
     
-    File format:
-    The file format is "stamp x y yaw  where stamp denotes the time stamp 
-    and x, y and yaw denote the Pose 
-    
-    """
-    file = open(filename)
-    data = file.read()
-    lines = data.replace("\t"," ").split("\n") 
-    list = [[v.strip() for v in line.split(" ") if v.strip()!=""] for line in lines if len(line)>0 and line[0]!="#"]
+    trace_plan = go.Scatter(x = data_plan[1],
+                          y = data_plan[2], 
+                          mode = 'lines+markers', 
+                          name= 'Plan',
+                          line=dict(width= 2.5),
+                          marker=dict(size=5.5))
 
-    #list = [(float(l[0]),l[1:]) for l in list if len(l)>1]
-    #list = [(float(l[i]) for i in l ) for l in list if len(l)>1]
-    list = [[float(l[0]),float(l[1]), float(l[2]), float(l[3])] for l in list if len(l)>1]
-    return list
-
-def plot(pose_list, legend):
-    pose_list_x = []
-    pose_list_y = []
-    pose_yaw_list = []
-    time_list = []
-
-    for pose in pose_list:
-        time = pose[0]
-        pose_x = pose[1]
-        pose_y = pose[1]
-        yaw = pose[2]
-
-        pose_list_x.append(pose_x)
-        pose_list_y.append(pose_y)
-        pose_yaw_list.append(yaw)
-        time_list.append(time)
-
-    trace_xy = go.Scatter(x=pose_list_x, y=pose_list_y, name=legend)
-    trace_x = go.Scatter(x=time_list, y=pose_list_x, name='x')
-    trace_y = go.Scatter(x=time_list, y=pose_list_y, name='y')
-    trace_yaw = go.Scatter(x=time_list, y=pose_yaw_list, name='yaw')
-
-    # DEPRECATED
-    #data = [trace_x, trace_y, trace_yaw]
-    #fig = tools.make_subplots(rows=3, cols=1, specs=[[{}], [{}], [{}]], shared_xaxes=True, shared_yaxes=True)
-
-    #fig.append_trace(trace_x, 3, 1)
-    #fig.append_trace(trace_y, 2, 1)
-    #fig.append_trace(trace_yaw, 1, 1)
-
-    #fig['layout'].update(height=600, width=600, title='AGV odometry')
-    #py.plot(fig, filename='odom_plotly')
-    
-    #return trace_x, trace_y, trace_yaw 
-    return trace_xy
+    trace_pose = go.Scatter(x = data_pose[1],
+                        y = data_pose[2], 
+                        mode = 'lines+markers', 
+                        name= 'Pose',
+                        line=dict(width= 1.5),
+                        opacity=0.7, marker=dict(
+                              size=3.5,
+                              color='Orange'))
+        
+    data = [trace_plan, trace_pose]
 
 if __name__ == '__main__':
     
@@ -111,69 +48,32 @@ if __name__ == '__main__':
 
     tools.set_credentials_file(username='ajithkrishnanbm', api_key='MCCZv2hEgYCcbPL9gQ92')
 
-    pose_list = read_file_list(args.pose_file)
-    plan_list = read_file_list(args.plan_file)
+    #data_plan=pd.read_csv(r'C:\Users\useradmin\Documents\AGV\plan.txt',sep= '\t',header=None)
+    #data_pose=pd.read_csv(r'C:\Users\useradmin\Documents\AGV\pose.txt',sep= '\t',header=None)
+    data_plan=pd.read_csv(args.plan_file,sep= '\t',header=None)
+    data_pose=pd.read_csv(args.pose_file,sep= '\t',header=None)
 
-    traces_x = []
-    traces_y = []
-    traces_yaw = []
-    #trace_x, trace_y, trace_yaw = plot(pose_list, 'ground_truth')
-    #traces_x.append(trace_x)
-    #traces_y.append(trace_y)
-    #traces_yaw.append(trace_yaw)
+    plot(data_plan, data_pose)
 
-    #trace_x, trace_y, trace_yaw = plot(plan_list, 'global_plan')
-    #traces_x.append(trace_x)
-    #traces_y.append(trace_y)
-    #traces_yaw.append(trace_yaw)
-    #    
-    #layout_x = go.Layout(
-    #        title='AGV odometry',
-    #        xaxis=dict(title='Timestamp'),
-    #        yaxis=dict(title='Odometry X'),
-    #        legend=dict(traceorder='reversed'),
-    #        )
+    layout= go.Layout(
+        title= 'AGV Path Vs Pose',
+        hovermode= 'closest',
+        xaxis= dict(
+            title= 'X Coordinate',
+            ticklen= 5,
+            zeroline= False,
+            gridwidth= 2),
+        yaxis=dict(
+            title= 'Y Coordinate',
+            ticklen= 5,
+            zeroline= True,
+            gridwidth= 2),
+            showlegend= True)
 
-    #layout_y = go.Layout(
-    #        title='AGV odometry',
-    #        xaxis=dict(title='Timestamp'),
-    #        yaxis=dict(title='Odometry Y'),
-    #        legend=dict(traceorder='reversed'),
-    #        )
-   
-    #layout_yaw = go.Layout(
-    #        title='AGV odometry',
-    #        xaxis=dict(title='Timestamp'),
-    #        yaxis=dict(title='Odometry Yaw'),
-    #        legend=dict(traceorder='reversed'),
-    #        )
+    fig= go.Figure(data=data, layout=layout)
 
-    #fig_x = go.Figure(data=traces_x, layout=layout_x)
-    #fig_y = go.Figure(data=traces_y, layout=layout_y)
-    #fig_yaw = go.Figure(data=traces_yaw, layout=layout_yaw)
+    # Plot in a different tab!
+    plotly.offline.plot(fig, filename='Agv_pathVspose.html')      
 
-    #py.plot(fig_x, filename='AGV Odomentry - stacked x')
-    #py.plot(fig_y, filename='AGV Odomentry - stacked y')
-    #py.plot(fig_yaw, filename='AGV Odomentry - stacked yaw')
-    
-    traces_xy = []
-    trace_xy = plot(pose_list, 'ground_truth')
-    traces_xy.append(trace_xy)
-
-    trace_xy = plot(plan_list, 'global_plan')
-    traces_xy.append(trace_xy)
-
-    layout_xy = go.Layout(
-            title='AGV odometry',
-            xaxis=dict(title='Odometry X'),
-            yaxis=dict(title='Odometry Y'),
-            legend=dict(traceorder='reversed'),
-            )
-
-    fig_xy = go.Figure(data=traces_xy, layout=layout_xy)
-
-    py.plot(fig_xy, filename='AGV Odomentry - stacked xy')
-    
-    
-
-
+    #plotly.offline.iplot(fig, filename='Agv_pathVspose.html')   #To plot within the noteook
+                                                                
