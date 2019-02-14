@@ -78,7 +78,7 @@ class PositionController(object):
         self.pub_pid_y_setpoint = rospy.Publisher("/agv_mecanum/pid_y/setpoint", Float64, queue_size=1)
         self.pub_pid_yaw_setpoint = rospy.Publisher("/agv_mecanum/pid_yaw/setpoint", Float64, queue_size=1)
         self.sub_sp = rospy.Subscriber("/move_base/TebLocalPlannerROS/global_plan", Path, self.callbackSetpoint)
-        self.pub_cmd = rospy.Publisher("/agv_mechanum/cmd_vel", Twist, queue_size=100)
+        self.pub_cmd = rospy.Publisher("/agv_mecanum/cmd_vel", Twist, queue_size=100)
 	#self.pub_cmd = rospy.Publisher("/cmd_vel", Twist, queue_size=100)
 
         self.cmd = Twist()
