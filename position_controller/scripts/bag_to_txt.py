@@ -26,19 +26,19 @@ def main():
     """Extract Odometry Info from a rosbag.
     """
     parser = argparse.ArgumentParser(description="Extract pose and plan from a ROS bag.")
-    parser.add_argument("bag_file", help="Input ROS bag.")
-    parser.add_argument("output_dir", help="Output directory.")
-    parser.add_argument("pose_topic", help="pose topic.")
-    parser.add_argument("plan_topic", help="Global plan topic.")    
+    parser.add_argument("--bagfile", help="Input ROS bag.")
+    parser.add_argument("--output_dir", help="Output directory.")
+    parser.add_argument("--pose_topic", help="pose topic.")
+    parser.add_argument("--plan_topic", help="Global plan topic.")    
 
     args = parser.parse_args()
 
-    print "\nExtracting pose from %s on topic %s into %s/pose.txt" % (args.bag_file,
+    print "\nExtracting pose from %s on topic %s into %spose.txt" % (args.bagfile,
                                                           args.pose_topic, args.output_dir)
-    print "\nExtracting plan from %s on topic %s into %s/plan.txt" % (args.bag_file,
+    print "\nExtracting plan from %s on topic %s into %splan.txt" % (args.bagfile,
                                                           args.plan_topic, args.output_dir)
 
-    bag = rosbag.Bag(args.bag_file, "r")
+    bag = rosbag.Bag(args.bagfile, "r")
     f_pose= open(args.output_dir+"pose.txt","w+")
     f_plan = open(args.output_dir+"plan.txt", "w+")
 
